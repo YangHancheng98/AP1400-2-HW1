@@ -1,5 +1,6 @@
 #include "hw1.h"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -238,8 +239,72 @@ Matrix concatenate(const Matrix& matrix1, const Matrix& matrix2, int axis = 0) {
     }
 }
 
-// Matrix ero_swap(const Matrix& matrix, size_t r1, size_t r2);
-// Matrix ero_multiply(const Matrix& matrix, size_t r, double c);
-// Matrix ero_sum(const Matrix& matrix, size_t r1, double c, size_t r2);
-// Matrix upper_triangular(const Matrix& matrix);
+Matrix ero_swap(const Matrix& matrix, size_t r1, size_t r2) {
+    Matrix result = matrix;
+    int row = matrix.size();
+    if (r1 >= row || r2 >= row) {
+        throw std::logic_error("input row index out of range.");
+    }
+    std::swap(result[r1], result[r2]);
+    return result;
+}
+
+Matrix ero_multiply(const Matrix& matrix, size_t r, double c) {
+    Matrix result = matrix;
+    int row = matrix.size();
+    if (r >= row) {
+        throw std::logic_error("input row index out of range.");
+    }
+    std::transform(result[r].begin(), result[r].end(), result[r].begin(),
+                   [c](double val) { return c * val; });
+    return result;
+}
+
+Matrix ero_sum(const Matrix& matrix, size_t r1, double c, size_t r2) {
+    Matrix result = matrix;
+    int row = matrix.size();
+    if (r1 >= row || r2 >= row) {
+        throw std::logic_error("input row index out of range.");
+    }
+    std::transform(result[r1].begin(), result[r1].end(), result[r2].begin(),
+                   result[r2].begin(),
+                   [c](double val1, double val2) { return c * val1 + val2; });
+    return result;
+}
+
+Matrix upper_triangular(const Matrix& matrix) {
+    int row = matrix.size();
+    if (row == 0) {
+        return Matrix{};
+    }
+    int col = matrix[0].size();
+    if (row != col) {
+        throw std::logic_error(
+            "upper_triangular should apply on square matrix.");
+    }
+    Matrix result = matrix;
+    if (row == 1) {
+        return result;
+    }
+    for (int j = 0; j < col; j++) {
+        int baseRow = j;
+        double diagonalElem = result[baseRow][baseRow];
+        if (diagonalElem == 0) {
+            for (int restRow = baseRow + 1; restRow < row; restRow++) {
+                if (result[restRow][baseRow] != 0) {
+                    result = ero_swap(result, baseRow, restRow);
+                    break;
+                }
+            }
+        }
+        diagonalElem = result[baseRow][baseRow];
+        if (diagonalElem == 0) continue;
+        for (int i = j + 1; i < row; i++) {
+            double constant = -result[i][j] / diagonalElem;
+            result = ero_sum(result, baseRow, constant, i);
+        }
+    }
+    return result;
+}
+
 }  // namespace algebra

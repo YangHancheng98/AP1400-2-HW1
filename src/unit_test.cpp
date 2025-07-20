@@ -301,7 +301,7 @@ TEST(HW1Test, CONCATENATE2) {
     EXPECT_DOUBLE_EQ(matrix[0][3], matrix2[0][0]);
     EXPECT_DOUBLE_EQ(matrix[1][3], matrix2[1][0]);
 }
-/*
+
 TEST(HW1Test, ERO_SWAP) {
     // Caution: r1 or r2 inputs are out of range
     EXPECT_THROW(algebra::ero_swap(Matrix{{1, 2}}, 0, 1), std::logic_error);
@@ -378,4 +378,3 @@ TEST(HW1Test, BONUS) {
     EXPECT_NEAR(res2[2][1], 0, 0.03);
     EXPECT_NEAR(res2[2][2], 39 / 4.0, 0.03);
 }
-*/
